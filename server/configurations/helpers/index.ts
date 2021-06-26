@@ -3,7 +3,6 @@ export const getEnvValue = (key: string): string => {
     return process.env[key] ?? "";
   } catch (error) {
     console.log(error);
-    throw new Error(error)
   }
 }
 
@@ -12,7 +11,7 @@ export const parseEnvJson = (key: string): any => {
   try {
     return JSON.parse(jsonString)
   } catch (error) {
-    console.log(error);
+    console.log("parseEnvJson", error);
   }
 }
 
@@ -22,6 +21,6 @@ export const parseEnvBase64Json = (key: string): any => {
    try {
      return JSON.parse(decodedString)
    } catch (error) {
-    console.log(error);
+    console.log("parseEnvBase64Json", error);
    }
 }

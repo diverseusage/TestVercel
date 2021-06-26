@@ -4,6 +4,8 @@ import { getFirebaseConfig, getFirebaseServiceAccount } from "./server/configura
 const firebaseConfig = getFirebaseConfig();
 const firebaseServiceAccount = getFirebaseServiceAccount();
 
+console.log("firebase config", firebaseConfig)
+
 const settings = {
   ...firebaseConfig,
   credential: admin.credential.cert(firebaseServiceAccount),
@@ -11,8 +13,6 @@ const settings = {
 
 if (!admin.apps.length) {
   admin.initializeApp(settings);
-}else {
-  admin.app(); // if already initialized, use that one
 }
 
 export const storage = admin.storage();
