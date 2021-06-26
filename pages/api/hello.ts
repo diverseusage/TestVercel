@@ -35,24 +35,29 @@ export default async function handler(
   const file = bucket.file(`${FIREBASE_STORAGE_UPLOAD_DIRECTORY}/${fileName}`);
 
   console.log("Before save file");
-  file.save(
-    imageBuffer,
-    {
-      metadata: {
+  try {
+    file.save(
+      imageBuffer,
+      {
         metadata: {
-          contentType: mimeType,
-          firebaseStorageDownloadTokens: generateUuid(),
+          metadata: {
+            contentType: mimeType,
+            firebaseStorageDownloadTokens: generateUuid(),
+          },
         },
+        public: true,
+        validation: "md5",
       },
-      public: true,
-      validation: "md5",
-    },
-    (error) => {
-      if (error) {
-        console.log(error);
+      (error) => {
+        if (error) {
+          console.log("IN SAVE error", error);
+        }
       }
-    }
-  );
+    );
+  } catch (error) {
+    console.log("CATCH ERROR IS: ", error)
+  }
+  
 
   res.status(200).json({ name: "John Doe" });
 }
