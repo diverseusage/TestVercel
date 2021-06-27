@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import { storage } from "../../firebase";
+import { storage, firestore } from "../../firebase";
 import { v4 as generateUuid } from "uuid";
 import mimeLookup from "mime-types";
 import { base } from "../../server/image";
@@ -9,13 +9,10 @@ type Data = {
   name: string;
 };
 
-const FIREBASE_STORAGE_UPLOAD_DIRECTORY = "uploads";
-const base64String = base === null ? "" : base.toString();
+const uploadPhoto = () => {
+  const FIREBASE_STORAGE_UPLOAD_DIRECTORY = "uploads";
+  const base64String = base === null ? "" : base.toString();
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
-) {
   const mimeType = base64String?.match(
     /data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/
   )[1];
@@ -23,8 +20,6 @@ export default async function handler(
   const fileName = `${generateUuid()}.${fileExtension}`;
   const base64EncodedImageString = base64String.split(";base64,").pop();
   const imageBuffer = Buffer.from(base64EncodedImageString, "base64");
-
-  let result = {};
 
   console.log("Before getting bucket");
   let bucket = storage.bucket();
@@ -57,7 +52,27 @@ export default async function handler(
   } catch (error) {
     console.log("CATCH ERROR IS: ", error)
   }
+}
+
+const readFromFirebase = async () => {
+  try {
+    const response = await firestore.collection("FeedPosts").orderBy("timestamp", "desc").get()
+    console.log("ReadFromFirebase-RESPONSE", response)
+    return response;
+  }
+  catch (error) {
+    console.log("ReadFromFirebase-ERROR:", error)
+    return null;
+  }
+}
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+) {
   
+  // uploadPhoto();
+  readFromFirebase();
 
   res.status(200).json({ name: "John Doe" });
 }

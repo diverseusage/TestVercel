@@ -15,4 +15,10 @@ if (!admin.apps.length) {
   admin.initializeApp(settings);
 }
 
-export const storage = admin.storage();
+const storage = admin.storage();
+const firestore = admin.firestore();
+
+export {
+  storage,
+  firestore
+}
