@@ -34,9 +34,10 @@ const uploadPhoto = () => {
     file.save(
       imageBuffer,
       {
+        contentType: mimeType,
         metadata: {
-          contentType: mimeType,
           metadata: {
+            contentType: mimeType,
             firebaseStorageDownloadTokens: generateUuid(),
           },
         },
@@ -47,14 +48,14 @@ const uploadPhoto = () => {
         if (error) {
           console.log("IN SAVE error", error);
         } else {
-          console.log("IN SAVE - NO ERROR")
+          console.log("IN SAVE - NO ERROR");
         }
       }
     );
   } catch (error) {
-    console.log("CATCH ERROR IS: ", error)
+    console.log("CATCH ERROR IS: ", error);
   }
-}
+};
 
 const uploadPhotoWriteStream = () => {
   const FIREBASE_STORAGE_UPLOAD_DIRECTORY = "uploads";
@@ -78,7 +79,6 @@ const uploadPhotoWriteStream = () => {
   const file = bucket.file(`${FIREBASE_STORAGE_UPLOAD_DIRECTORY}/${fileName}`);
 
   console.log("Before save file");
-  
 
   // try {
   //   file.save(
@@ -93,35 +93,36 @@ const uploadPhotoWriteStream = () => {
   // } catch (error) {
   //   console.log("CATCH ERROR IS: ", error)
   // }
-}
+};
 
 const readFromFirebase = async () => {
   try {
-    const response = await firestore.collection("FeedPosts").orderBy("timestamp", "desc").get()
-    console.log("ReadFromFirebase-RESPONSE", response)
-    console.log("Read one by one")
-    response.docs.map(fp => {
+    const response = await firestore
+      .collection("FeedPosts")
+      .orderBy("timestamp", "desc")
+      .get();
+    console.log("ReadFromFirebase-RESPONSE", response);
+    console.log("Read one by one");
+    response.docs.map((fp) => {
       const data = fp.data();
       console.log("FEEDPOST", {
         id: fp.id,
         author: data.author,
         message: data.message,
-        timestamp: data.timestamp
-      })
-    })
+        timestamp: data.timestamp,
+      });
+    });
     return response;
-  }
-  catch (error) {
-    console.log("ReadFromFirebase-ERROR:", error)
+  } catch (error) {
+    console.log("ReadFromFirebase-ERROR:", error);
     return null;
   }
-}
+};
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  
   uploadPhoto();
   // uploadPhotoWriteStream();
   // readFromFirebase();
