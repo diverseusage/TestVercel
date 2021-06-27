@@ -35,8 +35,8 @@ const uploadPhoto = () => {
       imageBuffer,
       {
         metadata: {
+          contentType: mimeType,
           metadata: {
-            contentType: mimeType,
             firebaseStorageDownloadTokens: generateUuid(),
           },
         },
@@ -46,12 +46,53 @@ const uploadPhoto = () => {
       (error) => {
         if (error) {
           console.log("IN SAVE error", error);
+        } else {
+          console.log("IN SAVE - NO ERROR")
         }
       }
     );
   } catch (error) {
     console.log("CATCH ERROR IS: ", error)
   }
+}
+
+const uploadPhotoWriteStream = () => {
+  const FIREBASE_STORAGE_UPLOAD_DIRECTORY = "uploads";
+  const base64String = base === null ? "" : base.toString();
+
+  const mimeType = base64String?.match(
+    /data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/
+  )[1];
+  const fileExtension = mimeLookup.extension(mimeType);
+  const fileName = `${generateUuid()}.${fileExtension}`;
+  const base64EncodedImageString = base64String.split(";base64,").pop();
+
+  const imageBuffer = Buffer.from(base64EncodedImageString, "base64");
+
+  console.log("Before getting bucket");
+  let bucket = storage.bucket();
+  console.log(
+    "Bucket path: ",
+    `${FIREBASE_STORAGE_UPLOAD_DIRECTORY}/${fileName}`
+  );
+  const file = bucket.file(`${FIREBASE_STORAGE_UPLOAD_DIRECTORY}/${fileName}`);
+
+  console.log("Before save file");
+  
+
+  // try {
+  //   file.save(
+  //     imageBuffer,
+  //     ,
+  //     (error) => {
+  //       if (error) {
+  //         console.log("IN SAVE error", error);
+  //       }
+  //     }
+  //   );
+  // } catch (error) {
+  //   console.log("CATCH ERROR IS: ", error)
+  // }
 }
 
 const readFromFirebase = async () => {
@@ -81,8 +122,9 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   
-  // uploadPhoto();
-  readFromFirebase();
+  uploadPhoto();
+  // uploadPhotoWriteStream();
+  // readFromFirebase();
 
   res.status(200).json({ name: "John Doe" });
 }
