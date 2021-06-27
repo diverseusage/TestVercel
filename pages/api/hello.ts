@@ -58,6 +58,16 @@ const readFromFirebase = async () => {
   try {
     const response = await firestore.collection("FeedPosts").orderBy("timestamp", "desc").get()
     console.log("ReadFromFirebase-RESPONSE", response)
+    console.log("Read one by one")
+    response.docs.map(fp => {
+      const data = fp.data();
+      console.log("FEEDPOST", {
+        id: fp.id,
+        author: data.author,
+        message: data.message,
+        timestamp: data.timestamp
+      })
+    })
     return response;
   }
   catch (error) {
